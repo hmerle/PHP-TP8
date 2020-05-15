@@ -36,7 +36,7 @@ $idcon = connexpdo($dsn, $user, $password);
     <h1>Rechercher une citation</h1>
     <hr>
     <div class="container">
-        <form class="form-group">
+        <form class="form-group" action="recherche.php" method="post">
             <label for="selectAuteur">Auteur</label>
                 <select class="form-control" id="selectAuteur">
                     <?php
@@ -52,7 +52,7 @@ $idcon = connexpdo($dsn, $user, $password);
                         $result2 = $idcon->prepare($query);
                         $result2->execute();
                         $res2 = $result2->fetch();
-                        echo "<option>".$res2[1]." ".$res2[0]."</option>";
+                        echo "<option name='".$res2[0]."'>".$res2[1]." ".$res2[0]."</option>";
                     }
                     ?>
                 </select>
@@ -72,12 +72,14 @@ $idcon = connexpdo($dsn, $user, $password);
                         $result2 = $idcon->prepare($query);
                         $result2->execute();
                         $res2 = $result2->fetch();
-                        echo "<option> ".$res2[0]."</option>";
+                        echo "<option name='".$res2[0]."'> ".$res2[0]."</option>";
                     }
                     ?>
                 </select>
             <br>
-            <button type="submit" class="btn btn-primary mb-2">Rechercher</button>
+            <input type="submit" class="btn btn-primary mb-2">
         </form>
     </div>
 </body>
+<?php
+var_dump($_POST);
