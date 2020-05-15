@@ -38,7 +38,7 @@ $idcon = connexpdo($dsn, $user, $password);
     <div class="container">
         <form class="form-group" action="recherche.php" method="post">
             <label for="selectAuteur">Auteur</label>
-                <select class="form-control" id="selectAuteur">
+                <select class="form-control" id="selectAuteur" name="selectAuteur">
                     <?php
                     $query1 = "SELECT * FROM auteur";
                     $result1 = $idcon->query($query1);
@@ -58,7 +58,7 @@ $idcon = connexpdo($dsn, $user, $password);
                 </select>
             <br>
             <label for="selectSiecle">Siècle</label>
-                <select class="form-control" id="selectSiecle">
+                <select class="form-control" id="selectSiecle" name="selectSiecle">
                     <?php
                     $query1 = "SELECT * FROM siecle";
                     $result1 = $idcon->query($query1);
@@ -77,9 +77,44 @@ $idcon = connexpdo($dsn, $user, $password);
                     ?>
                 </select>
             <br>
-            <input type="submit" class="btn btn-primary mb-2">
+            <input type="submit" class="btn btn-primary mb-2" name="button">
         </form>
     </div>
 </body>
 <?php
-var_dump($_POST);
+//if(isset($_POST["button"])){
+//    $nom = preg_split(" ",$_POST["selectAuteur"]);
+//    echo $nom[1].$nom[2];
+//    $query2 = "SELECT c.phrase FROM citation c, auteur a WHERE a.nom= ".$nom[0]." AND a.prenom = ".$nom[1];
+//    $result3 = $idcon->prepare($query2);
+//    $result3->execute();
+//    $res3 = $result3->fetchAll();
+//    echo $res3[1];
+//    echo "<table>";
+//    foreach($res3 as $data){
+//        echo "$data<br>";
+//    }
+//}
+if ($_POST['button']) {
+    $requeteRecherche = $idcon->prepare("select c.phrase, a.nom, s.numero from citation c, auteur a, siecle s
+                where c.auteurid=(select id from auteur where nom =:nomAuteur)
+                  and c.siecleid=(select id from siecle where numero =:siecle)
+                  and s.id = siecleid and a.id= auteurid");
+    $requeteRecherche->execute(array("nomAuteur" => $_POST["selectAuteur"], "siecle" => $_POST['selectSiecle']));
+    $res = $requeteRecherche->fetchAll();
+    echo "
+    <table class=\"table table-striped\">
+    <thead>
+    <tr>
+        <th scope=\"col\">Citation</th>
+        <th scope=\"col\">Auteur</th>
+        <th scope=\"col\">Siècle</th>
+    </tr>
+    </thead>
+    <tbody>";
+    for ($counter = 0; $counter < count($res); $counter++) {
+        echo "<tr><td>" . $res[$counter][0] . "</td><td>" . $res[$counter][1] . "</td><td>" . $res[$counter][2] . "</td></tr><br/>";
+    }
+    echo "</tbody>
+    </table>";
+}
